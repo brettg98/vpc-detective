@@ -1,0 +1,20 @@
+{
+    "SSO": {
+        "start_url": "https://your-sso-portal.awsapps.com/start",
+        "region": "us-east-1"
+    },
+    "Accounts": [
+        {
+            "name": "production",
+            "id": "123456789012",
+            "role_name": "AdministratorAccess",
+            "regions": ["us-east-1", "us-west-2"]
+        },
+        {
+            "name": "development",
+            "id": "210987654321",
+            "role_name": "AdministratorAccess",
+            "region": "us-east-1"
+        }
+    ]
+}
