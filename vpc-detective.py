@@ -99,7 +99,6 @@ def get_vpc_igw(client, vpc_id):
 
 def get_vpcs(client):
     vpc_list = []
-    all_vpcs = []
     try:
         paginator = client.get_paginator('describe_vpcs')
         for page in paginator.paginate():
