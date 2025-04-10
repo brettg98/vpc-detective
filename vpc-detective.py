@@ -25,7 +25,8 @@ def print_banner(return_banner=False):
 def get_interface_count(client, vpc_id):
     interface_count = 0
     try:
-        response = client.describe_network_interfaces(
+        paginator = client.get_paginator('describe_network_interfaces')
+        page_iterator = paginator.paginate(
             Filters=[
                 {
                     'Name': 'vpc-id',
@@ -33,7 +34,8 @@ def get_interface_count(client, vpc_id):
                 }
             ]
         )
-        interface_count = len(response['NetworkInterfaces'])
+        for page in page_iterator:
+            interface_count += len(page['NetworkInterfaces'])
     except botocore.exceptions.ClientError as error:
         raise error
     return interface_count
