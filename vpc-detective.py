@@ -63,7 +63,8 @@ def get_vpc_subnets(client, vpc_id):
 def get_natgws(client, vpc_id):
     natgw_count = 0
     try:
-        response = client.describe_nat_gateways(
+        paginator = client.get_paginator('describe_nat_gateways')
+        page_iterator = paginator.paginate(
             Filters = [
                 {
                     'Name': 'vpc-id',
@@ -71,7 +72,8 @@ def get_natgws(client, vpc_id):
                 }
             ]
         )
-        natgw_count = len(response['NatGateways'])
+        for page in page_iterator:
+            natgw_count = len(page['NatGateways'])
     except botocore.exceptions.ClientError as error:
         raise error
     return natgw_count
