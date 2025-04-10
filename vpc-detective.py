@@ -25,7 +25,8 @@ def print_banner(return_banner=False):
 def get_interface_count(client, vpc_id):
     interface_count = 0
     try:
-        response = client.describe_network_interfaces(
+        paginator = client.get_paginator('describe_network_interfaces')
+        page_iterator = paginator.paginate(
             Filters=[
                 {
                     'Name': 'vpc-id',
@@ -33,7 +34,8 @@ def get_interface_count(client, vpc_id):
                 }
             ]
         )
-        interface_count = len(response['NetworkInterfaces'])
+        for page in page_iterator:
+            interface_count += len(page['NetworkInterfaces'])
     except botocore.exceptions.ClientError as error:
         raise error
     return interface_count
@@ -42,7 +44,8 @@ def get_interface_count(client, vpc_id):
 def get_vpc_subnets(client, vpc_id):
     subnet_count = 0
     try:
-        response = client.describe_subnets(
+        paginator = client.get_paginator('describe_subnets')
+        page_iterator = paginator.paginate(
             Filters=[
                 {
                     'Name': 'vpc-id',
@@ -50,7 +53,8 @@ def get_vpc_subnets(client, vpc_id):
                 }
             ]
         )
-        subnet_count = len(response['Subnets'])
+        for page in page_iterator:
+            subnet_count = len(page['Subnets'])
     except botocore.exceptions.ClientError as error:
         raise error
     return subnet_count
@@ -59,7 +63,8 @@ def get_vpc_subnets(client, vpc_id):
 def get_natgws(client, vpc_id):
     natgw_count = 0
     try:
-        response = client.describe_nat_gateways(
+        paginator = client.get_paginator('describe_nat_gateways')
+        page_iterator = paginator.paginate(
             Filters = [
                 {
                     'Name': 'vpc-id',
@@ -67,7 +72,8 @@ def get_natgws(client, vpc_id):
                 }
             ]
         )
-        natgw_count = len(response['NatGateways'])
+        for page in page_iterator:
+            natgw_count = len(page['NatGateways'])
     except botocore.exceptions.ClientError as error:
         raise error
     return natgw_count
@@ -93,7 +99,6 @@ def get_vpc_igw(client, vpc_id):
 
 def get_vpcs(client):
     vpc_list = []
-    all_vpcs = []
     try:
         paginator = client.get_paginator('describe_vpcs')
         for page in paginator.paginate():
@@ -172,7 +177,7 @@ def generate_markdown(vpc_data_list, account_regions):
                     is_default = 'Yes' if vpc['is_default'] else 'No'
                     igw_present = 'Yes' if vpc['igw_present'] else 'No'
                     
-                    markdown_content += f"| {vpc_name} | {vpc['vpc_id']} | {vpc['vpc_cidr']} | {is_default} | {igw_present} | {vpc['natgw_count']} | {vpc['subnet_count']} | {vpc['interface_count']}\n"
+                    markdown_content += f"| {vpc_name} | {vpc['vpc_id']} | {vpc['vpc_cidr']} | {is_default} | {igw_present} | {vpc['natgw_count']} | {vpc['subnet_count']} | {vpc['interface_count']} |\n"
             
             markdown_content += "\n"
         
