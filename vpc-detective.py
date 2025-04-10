@@ -174,7 +174,7 @@ def generate_markdown(vpc_data_list, account_regions):
                     is_default = 'Yes' if vpc['is_default'] else 'No'
                     igw_present = 'Yes' if vpc['igw_present'] else 'No'
                     
-                    markdown_content += f"| {vpc_name} | {vpc['vpc_id']} | {vpc['vpc_cidr']} | {is_default} | {igw_present} | {vpc['natgw_count']} | {vpc['subnet_count']} | {vpc['interface_count']}\n"
+                    markdown_content += f"| {vpc_name} | {vpc['vpc_id']} | {vpc['vpc_cidr']} | {is_default} | {igw_present} | {vpc['natgw_count']} | {vpc['subnet_count']} | {vpc['interface_count']} |\n"
             
             markdown_content += "\n"
         
