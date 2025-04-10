@@ -22,6 +22,23 @@ def print_banner(return_banner=False):
     print(banner)
 
 
+def get_interface_count(client, vpc_id):
+    interface_count = 0
+    try:
+        response = client.describe_network_interfaces(
+            Filters=[
+                {
+                    'Name': 'vpc-id',
+                    'Values': [vpc_id]
+                }
+            ]
+        )
+        interface_count = len(response['NetworkInterfaces'])
+    except botocore.exceptions.ClientError as error:
+        raise error
+    return interface_count
+
+
 def get_vpc_subnets(client, vpc_id):
     subnet_count = 0
     try:
@@ -91,6 +108,7 @@ def get_vpcs(client):
                 igw_present = get_vpc_igw(client, vpc_id)
                 subnet_count = get_vpc_subnets(client, vpc_id)
                 natgw_count = get_natgws(client, vpc_id)
+                interface_count = get_interface_count(client, vpc_id)
 
                 vpc_data = {
                     'vpc_id': vpc_id,
@@ -100,6 +118,7 @@ def get_vpcs(client):
                     'igw_present': igw_present,
                     'natgw_count': natgw_count,
                     'subnet_count': subnet_count,
+                    'interface_count': interface_count,
                     'region': client.meta.region_name
                 }
                 vpc_list.append(vpc_data)
@@ -141,11 +160,11 @@ def generate_markdown(vpc_data_list, account_regions):
             markdown_content += f"### Region: {region}\n\n"
             
             # Create main VPC table
-            markdown_content += "| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets |\n"
-            markdown_content += "|---------|--------|------------|---------|-----|---------|--------|\n"
+            markdown_content += "| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |\n"
+            markdown_content += "|---------|--------|------------|---------|-----|---------|--------|---|\n"
             
             if not vpcs:
-                markdown_content += "| *No VPCs found* | - | - | - | - | - | - |\n"
+                markdown_content += "| *No VPCs found* | - | - | - | - | - | - | - |\n"
             else:
                 # Add VPCs to the table
                 for vpc in vpcs:
@@ -153,7 +172,7 @@ def generate_markdown(vpc_data_list, account_regions):
                     is_default = 'Yes' if vpc['is_default'] else 'No'
                     igw_present = 'Yes' if vpc['igw_present'] else 'No'
                     
-                    markdown_content += f"| {vpc_name} | {vpc['vpc_id']} | {vpc['vpc_cidr']} | {is_default} | {igw_present} | {vpc['natgw_count']} | {vpc['subnet_count']} |\n"
+                    markdown_content += f"| {vpc_name} | {vpc['vpc_id']} | {vpc['vpc_cidr']} | {is_default} | {igw_present} | {vpc['natgw_count']} | {vpc['subnet_count']} | {vpc['interface_count']}\n"
             
             markdown_content += "\n"
         
