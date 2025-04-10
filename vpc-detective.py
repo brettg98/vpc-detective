@@ -44,7 +44,8 @@ def get_interface_count(client, vpc_id):
 def get_vpc_subnets(client, vpc_id):
     subnet_count = 0
     try:
-        response = client.describe_subnets(
+        paginator = client.get_paginator('describe_subnets')
+        page_iterator = paginator.paginate(
             Filters=[
                 {
                     'Name': 'vpc-id',
@@ -52,7 +53,8 @@ def get_vpc_subnets(client, vpc_id):
                 }
             ]
         )
-        subnet_count = len(response['Subnets'])
+        for page in page_iterator:
+            subnet_count = len(page['Subnets'])
     except botocore.exceptions.ClientError as error:
         raise error
     return subnet_count
