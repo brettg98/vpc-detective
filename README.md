@@ -15,6 +15,7 @@ VPC Detective is a tool that helps AWS administrators get a comprehensive view o
   - Internet Gateway presence
   - NAT Gateway count
   - Subnet count
+  - Network Interface count
 - **Complete Coverage**: Shows all configured accounts and regions, even when no VPCs are present
 
 ## Prerequisites
@@ -81,25 +82,25 @@ The script generates a markdown file (`vpc-documentation.md`) with a structured 
 
 ### Region: us-east-1
 
-| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets |
-|---------|--------|------------|---------|-----|---------|--------|
-| Main-VPC | vpc-0abc123def456 | 10.0.0.0/16 | No | Yes | 3 | 9 |
-| Default VPC | vpc-0123456789abcdef | 172.31.0.0/16 | Yes | Yes | 0 | 6 |
+| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |
+|---------|--------|------------|---------|-----|---------|--------|------------|
+| Main-VPC | vpc-0abc123def456 | 10.0.0.0/16 | No | Yes | 3 | 9 | 15 |
+| Default VPC | vpc-0123456789abcdef | 172.31.0.0/16 | Yes | Yes | 0 | 6 | 2 |
 
 ### Region: us-west-2
 
-| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets |
-|---------|--------|------------|---------|-----|---------|--------|
-| DR-VPC | vpc-0def456abc789 | 10.1.0.0/16 | No | Yes | 2 | 6 |
+| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |
+|---------|--------|------------|---------|-----|---------|--------|------------|
+| DR-VPC | vpc-0def456abc789 | 10.1.0.0/16 | No | Yes | 2 | 6 | 8 |
 
 ## Account: development (210987654321)
 
 ### Region: us-east-1
 
-| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets |
-|---------|--------|------------|---------|-----|---------|--------|
-| Dev-VPC | vpc-0xyz987abc654 | 10.2.0.0/16 | No | Yes | 1 | 4 |
-| *No VPCs found* | - | - | - | - | - | - |
+| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |
+|---------|--------|------------|---------|-----|---------|--------|------------|
+| Dev-VPC | vpc-0xyz987abc654 | 10.2.0.0/16 | No | Yes | 1 | 4 | 7 |
+| *No VPCs found* | - | - | - | - | - | - | - |
 ```
 
 ## Benefits
