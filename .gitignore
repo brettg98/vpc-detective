@@ -27,9 +27,28 @@ venv/
 env/
 ENV/
 
-# AWS
+# AWS Configuration (SENSITIVE - contains account IDs and SSO URLs)
 account-list.json
+account-list-*.json
+
+# Generated Reports (may contain sensitive infrastructure details)
 vpc-documentation.md
+vpc-documentation-*.md
+vpc-test-output-*.md
+
+# Test Files (optional - can be committed if desired)
+# Uncomment these lines if you want to exclude test files:
+# test_flow_logs.py
+# test_integration.py
+# test_enhanced_functionality.py
+# test_real_aws.py
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
 
 # IDE files
 .idea/
@@ -37,3 +56,15 @@ vpc-documentation.md
 *.swp
 *.swo
 .DS_Store
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
