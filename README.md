@@ -2,7 +2,7 @@
 
 ![VPC Detective Logo](images/vpcdetective.png)
 
-VPC Detective is a tool that helps AWS administrators get a comprehensive view of their VPC infrastructure across multiple AWS accounts and regions. It automatically collects VPC information and generates a markdown report for easy review.
+VPC Detective is a tool that helps AWS administrators get a comprehensive view of their VPC infrastructure across multiple AWS accounts and regions. It automatically collects VPC information, detects VPC Flow Logs configurations, and generates a detailed markdown report for easy review and compliance monitoring.
 
 ## Features
 
@@ -16,6 +16,11 @@ VPC Detective is a tool that helps AWS administrators get a comprehensive view o
   - NAT Gateway count
   - Subnet count
   - Network Interface count
+- **VPC Flow Logs Detection**: Automatically detects and reports Flow Logs configurations:
+  - Flow Logs status (Enabled/Disabled/Multiple/Error)
+  - Destination types (CloudWatch Logs, S3, Kinesis Data Firehose)
+  - CloudWatch log retention periods
+  - Coverage statistics and compliance reporting
 - **Complete Coverage**: Shows all configured accounts and regions, even when no VPCs are present
 
 ## Prerequisites
@@ -26,6 +31,24 @@ VPC Detective is a tool that helps AWS administrators get a comprehensive view o
 - Required Python packages:
   - boto3
   - aws-sso-lib
+  - pytest
+
+### Required IAM Permissions
+
+Your AWS role must have the following permissions:
+
+**Basic VPC Information:**
+- `ec2:DescribeVpcs`
+- `ec2:DescribeSubnets`
+- `ec2:DescribeInternetGateways`
+- `ec2:DescribeNatGateways`
+- `ec2:DescribeNetworkInterfaces`
+
+**VPC Flow Logs Detection (New):**
+- `ec2:DescribeFlowLogs`
+- `logs:DescribeLogGroups`
+
+**Note:** If Flow Logs permissions are missing, the tool will gracefully handle the error and show "Error" status for Flow Logs detection while continuing to collect other VPC information.
 
 ## Configuration
 
@@ -74,41 +97,54 @@ The script will:
 The script generates a markdown file (`vpc-documentation.md`) with a structured report of all VPCs across your accounts and regions. Here's an example of the output format:
 
 ```markdown
-# VPC Detective
-## Sniffing out your subnets since 2025
-*Generated on: 2025-03-27 15:08:43*
+# 🕵️ VPC Detective
+## 🔎 Sniffing out your subnets since 2025 🔎
+*Generated on: 2025-07-21 15:08:43*
 
 ## Account: production (123456789012)
 
 ### Region: us-east-1
 
-| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |
-|---------|--------|------------|---------|-----|---------|--------|------------|
-| Main-VPC | vpc-0abc123def456 | 10.0.0.0/16 | No | Yes | 3 | 9 | 15 |
-| Default VPC | vpc-0123456789abcdef | 172.31.0.0/16 | Yes | Yes | 0 | 6 | 2 |
+| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces | Flow Logs | Destination | Retention |
+|---------|--------|------------|---------|-----|---------|--------|------------|-----------|-------------|-----------|
+| Main-VPC | vpc-0abc123def456 | 10.0.0.0/16 | No | Yes | 3 | 9 | 15 | Enabled | CloudWatch | 30 days |
+| Default VPC | vpc-0123456789abcdef | 172.31.0.0/16 | Yes | Yes | 0 | 6 | 2 | Disabled | - | - |
 
 ### Region: us-west-2
 
-| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |
-|---------|--------|------------|---------|-----|---------|--------|------------|
-| DR-VPC | vpc-0def456abc789 | 10.1.0.0/16 | No | Yes | 2 | 6 | 8 |
+| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces | Flow Logs | Destination | Retention |
+|---------|--------|------------|---------|-----|---------|--------|------------|-----------|-------------|-----------|
+| DR-VPC | vpc-0def456abc789 | 10.1.0.0/16 | No | Yes | 2 | 6 | 8 | Multiple | CloudWatch, S3 | 90 days |
 
 ## Account: development (210987654321)
 
 ### Region: us-east-1
 
-| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces |
-|---------|--------|------------|---------|-----|---------|--------|------------|
-| Dev-VPC | vpc-0xyz987abc654 | 10.2.0.0/16 | No | Yes | 1 | 4 | 7 |
-| *No VPCs found* | - | - | - | - | - | - | - |
+| VPC Name | VPC ID | CIDR Block | Default | IGW | NAT GWs | Subnets | Interfaces | Flow Logs | Destination | Retention |
+|---------|--------|------------|---------|-----|---------|--------|------------|-----------|-------------|-----------|
+| Dev-VPC | vpc-0xyz987abc654 | 10.2.0.0/16 | No | Yes | 1 | 4 | 7 | Enabled | S3 | N/A |
+
+## Flow Logs Coverage Summary
+
+### Overall Statistics
+- **Total VPCs**: 4
+- **VPCs with Flow Logs**: 3 (75.0%)
+- **VPCs without Flow Logs**: 1 (25.0%)
+
+### By Account
+- **production (123456789012)**: 2/3 VPCs (66.7%)
+- **development (210987654321)**: 1/1 VPCs (100.0%)
 ```
 
 ## Benefits
 
 - **Quick Infrastructure Assessment**: Easily see all VPCs across your AWS organization
-- **Identify Unused Resources**: Spot empty regions or accounts with no VPCs
+- **Flow Logs Visibility**: Identify VPCs without proper network monitoring enabled
+- **Compliance Monitoring**: Track Flow Logs coverage across accounts for security compliance
+- **Cost Optimization**: Identify unused resources and optimize Flow Logs retention settings
+- **Security Posture**: Ensure comprehensive network logging for security analysis
 - **Documentation**: Generate up-to-date documentation of your VPC infrastructure
-- **Compliance**: Help with auditing and compliance by maintaining infrastructure documentation
+- **Multi-Destination Support**: Track Flow Logs going to CloudWatch, S3, and Kinesis destinations
 
 ## Project Structure
 
